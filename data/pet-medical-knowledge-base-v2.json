@@ -1,0 +1,915 @@
+{
+  "schema_version": "2.0",
+  "dataset_name": "pet_medical_knowledge_base_v2",
+  "description": "基于原 JSON 中来源入口核验并扩展出的犬猫宠物医疗知识点库。每条记录聚焦一个医学主题，适合后续兽医审核、embedding、PostgreSQL/pgvector 导入和 RAG 检索。",
+  "created_at": "2026-08-26",
+  "language": "zh-CN",
+  "target_species": [
+    "dog",
+    "cat"
+  ],
+  "content_scope": [
+    "症状",
+    "疾病",
+    "检查",
+    "急症分流",
+    "营养",
+    "预防免疫",
+    "疼痛",
+    "口腔牙科",
+    "皮肤科",
+    "呼吸系统",
+    "泌尿系统",
+    "内分泌与代谢"
+  ],
+  "source_method": "只使用原 JSON 中 10 个来源 URL 作为入口；具体医学内容来自这些入口下的公开专题页或指南页，采用中文摘要式改写，不复制原文。",
+  "usage_policy": {
+    "current_status": "draft_pending_vet_review",
+    "embedding_status": "not_generated",
+    "commercial_use": "not_cleared",
+    "medical_safety": "不得直接作为诊断、处方、药物剂量或个体化治疗依据；生产使用前必须由执业兽医审核。",
+    "copyright_safety": "公开可访问不等于允许复制、批量采集、生成 embedding、训练或商业使用；需要逐来源核验许可。"
+  },
+  "source_records": [
+    {
+      "source_id": "SRC-MERCK-PET",
+      "name": "Merck Veterinary Manual - Pet Owners Overview",
+      "url": "https://www.merckvetmanual.com/resourcespages/pet-owners-overview",
+      "source_role": "犬猫宠物主人医学主题入口",
+      "medical_relevance": "gateway",
+      "access_status": "direct_public_access_verified",
+      "license_status": "copyright_permissions_require_review"
+    },
+    {
+      "source_id": "SRC-MERCK-DOG",
+      "name": "Merck Veterinary Manual - Dog Owners",
+      "url": "https://www.merckvetmanual.com/dog-owners",
+      "source_role": "犬类疾病主题入口，具体知识来自其下属专题页",
+      "medical_relevance": "medical_index",
+      "access_status": "direct_public_access_verified",
+      "license_status": "copyright_permissions_require_review"
+    },
+    {
+      "source_id": "SRC-MERCK-CAT",
+      "name": "Merck Veterinary Manual - Cat Owners",
+      "url": "https://www.merckvetmanual.com/cat-owners",
+      "source_role": "猫类疾病主题入口，具体知识来自其下属专题页",
+      "medical_relevance": "medical_index",
+      "access_status": "direct_public_access_verified",
+      "license_status": "copyright_permissions_require_review"
+    },
+    {
+      "source_id": "SRC-MERCK-PERMISSIONS",
+      "name": "Merck Veterinary Manual - Permissions",
+      "url": "https://www.merckvetmanual.com/content/permissions",
+      "source_role": "版权与内容使用审查入口，不生成医学知识",
+      "medical_relevance": "rights_only",
+      "access_status": "direct_public_access_verified",
+      "license_status": "must_read_before_ingestion"
+    },
+    {
+      "source_id": "SRC-WSAVA-GLOBAL",
+      "name": "WSAVA Global Guidelines",
+      "url": "https://wsava.org/global-guidelines/",
+      "source_role": "犬猫临床指南目录与医学指南总入口",
+      "medical_relevance": "guideline_index",
+      "access_status": "direct_public_access_verified_at_index",
+      "license_status": "guideline_copyright_require_review"
+    },
+    {
+      "source_id": "SRC-WSAVA-NUTRITION",
+      "name": "WSAVA Nutrition Guidelines",
+      "url": "https://wsava.org/global-guidelines/global-nutrition-guidelines/",
+      "source_role": "犬猫营养评估与营养计划指南",
+      "medical_relevance": "clinical_guideline",
+      "access_status": "direct_public_access_verified",
+      "license_status": "guideline_copyright_require_review"
+    },
+    {
+      "source_id": "SRC-WSAVA-VACCINATION",
+      "name": "WSAVA Vaccination Guidelines",
+      "url": "https://wsava.org/global-guidelines/vaccination-guidelines/",
+      "source_role": "犬猫疫苗接种指南",
+      "medical_relevance": "clinical_guideline",
+      "access_status": "direct_public_access_verified",
+      "license_status": "guideline_copyright_require_review"
+    },
+    {
+      "source_id": "SRC-WSAVA-PAIN",
+      "name": "WSAVA Pain Guidelines",
+      "url": "https://wsava.org/global-guidelines/pain-guidelines/",
+      "source_role": "犬猫疼痛识别、评估和管理指南",
+      "medical_relevance": "clinical_guideline",
+      "access_status": "direct_public_access_verified",
+      "license_status": "guideline_copyright_require_review"
+    },
+    {
+      "source_id": "SRC-AAHA",
+      "name": "AAHA Guidelines",
+      "url": "https://www.aaha.org/for-veterinary-professionals/aaha-guidelines/",
+      "source_role": "犬猫营养、疼痛、皮肤、液体治疗、糖尿病等指南目录",
+      "medical_relevance": "clinical_guideline_index",
+      "access_status": "direct_public_access_verified_at_index",
+      "license_status": "some_content_login_or_permissions_require_review"
+    },
+    {
+      "source_id": "SRC-CVMA",
+      "name": "中国兽医协会",
+      "url": "https://www.cvma.org.cn/",
+      "source_role": "中国兽医行业、团体标准和本地规范线索；本版本暂不据此抽取医学事实",
+      "medical_relevance": "local_reference_index",
+      "access_status": "direct_public_access_verified_at_index",
+      "license_status": "standard_and_content_permissions_require_review"
+    }
+  ],
+  "statistics": {
+    "source_count": 10,
+    "medical_knowledge_point_count": 23,
+    "species_counts": {
+      "dog": 15,
+      "cat": 19,
+      "dog_and_cat": 11
+    },
+    "risk_counts": {
+      "medium": 6,
+      "high": 16,
+      "critical": 1
+    }
+  },
+  "knowledge_points": [
+    {
+      "knowledge_id": "PMK-0001",
+      "title": "犬呕吐的常见原因与基本鉴别",
+      "content": "犬呕吐是胃或上段小肠内容物经口用力排出的过程，可能与消化系统疾病、肝肾功能异常、胰腺疾病、神经系统疾病、异物、刺激性物质或毒物摄入有关。呕吐与反流不同：呕吐通常伴有恶心、干呕或腹部用力，而反流多为被动排出未消化内容物。",
+      "species": [
+        "dog"
+      ],
+      "domain": "消化系统",
+      "knowledge_type": "症状知识",
+      "keywords": [
+        "犬呕吐",
+        "狗狗呕吐",
+        "呕吐和反流"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "狗狗呕吐是什么原因",
+        "犬呕吐和反流怎么区分"
+      ],
+      "source_ids": [
+        "SRC-MERCK-DOG"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/dog-owners/digestive-disorders-of-dogs/vomiting-in-dogs"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能仅凭症状确定病因；反复或伴随异常表现时需要兽医检查。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0002",
+      "title": "犬持续或伴随异常表现的呕吐需要进一步检查",
+      "content": "犬呕吐持续时间较长、频率较高，或同时出现血液、腹痛、精神沉郁、脱水、虚弱、发热、体重下降等表现时，通常需要更详细的兽医评估。评估可能包括病史、体格检查、血液和尿液检查、粪便检查、影像学检查，部分病例还可能需要内镜、活检或超声等检查。",
+      "species": [
+        "dog"
+      ],
+      "domain": "消化系统",
+      "knowledge_type": "就医分流",
+      "keywords": [
+        "犬反复呕吐",
+        "呕吐带血",
+        "犬脱水",
+        "宠物就医"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "狗狗一直吐要不要去医院",
+        "犬呕吐带血怎么办"
+      ],
+      "source_ids": [
+        "SRC-MERCK-DOG"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/dog-owners/digestive-disorders-of-dogs/vomiting-in-dogs"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "这是就医判断信息，不替代急诊分诊；具体紧急程度由兽医结合状态判断。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0003",
+      "title": "猫呕吐的可能原因与毛球风险",
+      "content": "猫呕吐可能与消化系统疾病、肝肾功能异常、胰腺疾病、神经系统疾病、寄生虫、感染、药物、毒物、异物、食物过敏或肿瘤等有关。猫在梳理毛发时会吞入毛发，毛发可能形成毛球；频繁毛球或反复呕吐不能简单归因于毛球，需要排查其他疾病。",
+      "species": [
+        "cat"
+      ],
+      "domain": "消化系统",
+      "knowledge_type": "症状知识",
+      "keywords": [
+        "猫呕吐",
+        "猫毛球",
+        "猫反复呕吐",
+        "猫食物过敏"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫咪吐毛球正常吗",
+        "猫反复呕吐是什么原因"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/digestive-disorders-of-cats/vomiting-in-cats"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不得把所有猫呕吐都判断为毛球；反复呕吐应由兽医评估。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0004",
+      "title": "猫严重或长期呕吐的就医信号",
+      "content": "猫长期呕吐、每天多次呕吐，或同时出现血液、腹痛、精神沉郁、脱水、虚弱、发热、体重下降等表现时，需要进行详细检查。常见评估手段包括血液、尿液和粪便检查、腹部 X 光或超声；部分病例可能需要内镜和活检。",
+      "species": [
+        "cat"
+      ],
+      "domain": "消化系统",
+      "knowledge_type": "就医分流",
+      "keywords": [
+        "猫持续呕吐",
+        "猫呕吐带血",
+        "猫脱水",
+        "猫咪不吃东西"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫一直吐要去医院吗",
+        "猫呕吐后不吃东西怎么办"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/digestive-disorders-of-cats/vomiting-in-cats"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "猫的脱水和持续不进食可能快速恶化，不能用本条目代替兽医分诊。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0005",
+      "title": "犬泌尿系统疾病评估需要结合病史、体检和尿液检查",
+      "content": "犬泌尿系统问题的评估通常会关注饮水量、排尿频率、尿量、尿液外观、行为变化、用药史、食欲、体重和既往疾病。兽医可能进行体格检查、血液检查、血压检查、尿液分析、尿培养、X 光、超声或其他检查。尿液分析可观察尿液浓度、外观、酸碱度以及血液、蛋白、糖、酮体、胆红素、细胞、细菌、结晶和管型等。",
+      "species": [
+        "dog"
+      ],
+      "domain": "泌尿系统",
+      "knowledge_type": "检查知识",
+      "keywords": [
+        "犬尿检",
+        "犬泌尿系统",
+        "犬尿液分析",
+        "犬尿路感染"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "狗狗尿检能查什么",
+        "犬排尿异常怎么检查"
+      ],
+      "source_ids": [
+        "SRC-MERCK-DOG"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/dog-owners/kidney-and-urinary-tract-disorders-of-dogs/detecting-disorders-of-the-kidneys-and-urinary-tract-in-dogs"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能仅凭尿检某一项自行诊断；样本采集、保存和结果解释需要专业人员参与。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0006",
+      "title": "猫泌尿系统问题的常见检查与下尿路疾病范围",
+      "content": "猫泌尿系统问题的评估可结合病史、体格检查、血液和尿液检查、血压、X 光、超声及必要的内镜或活检。猫下尿路疾病不是单一疾病名称，可能包括特发性膀胱炎、无菌性膀胱炎、尿石、尿道阻塞、肿瘤或细菌感染等不同问题。",
+      "species": [
+        "cat"
+      ],
+      "domain": "泌尿系统",
+      "knowledge_type": "检查知识",
+      "keywords": [
+        "猫尿检",
+        "猫下尿路疾病",
+        "猫膀胱炎",
+        "猫尿路问题"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫频繁去猫砂盆是什么病",
+        "猫下尿路疾病包括什么"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/kidney-and-urinary-tract-disorders-of-cats/detecting-disorders-of-the-kidneys-and-urinary-tract-of-cats"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "下尿路疾病包含多种不同病因，不能通过一个标签直接确定治疗方案。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0007",
+      "title": "猫排尿困难或尿道阻塞属于高风险情况",
+      "content": "猫泌尿系统疾病中可能出现尿道阻塞。若猫频繁进出猫砂盆、持续用力排尿但尿量很少或没有尿液，或伴随明显疼痛、精神状态变差，应尽快联系兽医。公猫并非唯一可能受影响的个体，任何性别的猫出现明显排尿异常都需要认真处理。",
+      "species": [
+        "cat"
+      ],
+      "domain": "泌尿系统",
+      "knowledge_type": "急症分流",
+      "keywords": [
+        "猫尿闭",
+        "猫排尿困难",
+        "猫频繁蹲猫砂盆",
+        "猫尿道阻塞"
+      ],
+      "risk_level": "critical",
+      "retrieval_intent": [
+        "猫尿不出来怎么办",
+        "猫一直蹲猫砂盆但没有尿"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/kidney-and-urinary-tract-disorders-of-cats/detecting-disorders-of-the-kidneys-and-urinary-tract-of-cats"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不得建议在家自行挤压膀胱、灌药或延误就医；需要立即由兽医判断。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0008",
+      "title": "猫尿石是猫泌尿系统疾病的重要主题",
+      "content": "猫尿石是猫肾脏或泌尿道中形成的矿物质结石，可能导致疼痛、血尿、排尿困难或尿道阻塞。结石的种类、位置、数量和是否造成阻塞会影响处理方式，需要结合尿液、影像学和临床检查判断。",
+      "species": [
+        "cat"
+      ],
+      "domain": "泌尿系统",
+      "knowledge_type": "疾病知识",
+      "keywords": [
+        "猫尿结石",
+        "猫膀胱结石",
+        "猫血尿",
+        "猫尿道阻塞"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫尿结石怎么办",
+        "猫血尿是不是结石"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/kidney-and-urinary-tract-disorders-of-cats/urinary-stones-uroliths-calculi-in-cats"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能依据症状判断结石类型，也不能自行使用处方饮食或药物替代检查。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0009",
+      "title": "犬过敏性皮肤病不是单一病因，通常需要分步排查",
+      "content": "犬皮肤瘙痒、红疹、脱毛或反复皮肤炎症可能与过敏、寄生虫、感染或其他全身性问题有关。过敏性皮肤病的诊断和管理通常需要结合病史、皮肤检查、寄生虫控制、感染评估以及必要时的饮食排除试验等，不能只根据“瘙痒”一个症状下结论。",
+      "species": [
+        "dog"
+      ],
+      "domain": "皮肤科",
+      "knowledge_type": "疾病与诊断",
+      "keywords": [
+        "犬皮肤瘙痒",
+        "犬过敏",
+        "犬皮炎",
+        "犬脱毛"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "狗狗一直挠痒是什么原因",
+        "犬过敏怎么检查"
+      ],
+      "source_ids": [
+        "SRC-MERCK-DOG",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/dog-owners/skin-disorders-of-dogs/allergies-in-dogs",
+        "https://www.aaha.org/resources/2023-aaha-management-of-allergic-skin-diseases-in-dogs-and-cats-guidelines/"
+      ],
+      "evidence_type": "clinical_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "皮肤用药可能有物种、病因和禁忌差异，具体治疗必须由兽医制定。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0010",
+      "title": "猫食物过敏的评估通常需要严格的饮食排除试验",
+      "content": "猫食物过敏可能表现为瘙痒、结痂性丘疹、对称性脱毛或嗜酸性斑块等。可靠的评估通常需要在兽医指导下进行平衡、完整的饮食排除或水解蛋白饮食试验，并严格避免额外零食和其他食物；血液或皮肤测试不能替代规范的饮食试验。猫不能因为换食而被强迫长期不进食，因为持续食欲不振可能造成严重肝脏问题。",
+      "species": [
+        "cat"
+      ],
+      "domain": "皮肤科",
+      "knowledge_type": "疾病与诊断",
+      "keywords": [
+        "猫食物过敏",
+        "猫瘙痒",
+        "猫脱毛",
+        "饮食排除试验"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫咪食物过敏怎么确定",
+        "猫换粮后不吃怎么办"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/skin-disorders-of-cats/allergies-of-cats",
+        "https://www.aaha.org/resources/2023-aaha-management-of-allergic-skin-diseases-in-dogs-and-cats-guidelines/"
+      ],
+      "evidence_type": "clinical_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "排除饮食的配方、周期和复食验证必须由兽医指导；不能自行让猫禁食。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0011",
+      "title": "猫呼吸道疾病综合征可由多种病原体单独或共同引起",
+      "content": "猫呼吸道疾病综合征是一组由多种病原体造成的呼吸道疾病，可出现鼻腔和鼻窦炎症、结膜炎、流泪、流涎和口腔溃疡等表现。猫疱疹病毒 1 型和猫杯状病毒是主要相关病原体，但不同病原体可能同时存在，因此仅凭外观症状通常不能确定具体病原。",
+      "species": [
+        "cat"
+      ],
+      "domain": "呼吸系统与传染病",
+      "knowledge_type": "疾病知识",
+      "keywords": [
+        "猫呼吸道感染",
+        "猫鼻支",
+        "猫杯状病毒",
+        "猫打喷嚏"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫打喷嚏流眼泪是什么病",
+        "猫鼻支和杯状病毒怎么区分"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT",
+        "SRC-WSAVA-VACCINATION"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/lung-and-airway-disorders-of-cats/feline-respiratory-disease-complex-feline-viral-rhinotracheitis-feline-calicivirus",
+        "https://wsava.org/global-guidelines/vaccination-guidelines/"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "幼猫、老年猫或呼吸困难个体风险可能更高，不能仅凭网络资料决定是否用药。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0012",
+      "title": "猫呼吸道疾病的传播与复发管理需要关注环境因素",
+      "content": "猫呼吸道相关病原体可通过呼吸道飞沫和被污染的物品传播，康复后的猫可能在较长时间内排出病毒，压力也可能诱发复发。管理通常需要结合兽医建议、清洁眼鼻分泌物、支持进食和饮水、降低拥挤与压力，并根据个体情况考虑疫苗和其他治疗。",
+      "species": [
+        "cat"
+      ],
+      "domain": "呼吸系统与传染病",
+      "knowledge_type": "预防与管理",
+      "keywords": [
+        "猫呼吸道传染",
+        "猫鼻支复发",
+        "猫环境消毒",
+        "猫疫苗"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫上呼吸道感染会传染吗",
+        "猫鼻支为什么反复"
+      ],
+      "source_ids": [
+        "SRC-MERCK-CAT",
+        "SRC-WSAVA-VACCINATION"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/cat-owners/lung-and-airway-disorders-of-cats/feline-respiratory-disease-complex-feline-viral-rhinotracheitis-feline-calicivirus",
+        "https://wsava.org/global-guidelines/vaccination-guidelines/"
+      ],
+      "evidence_type": "owner_education",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能把家庭环境管理当作抗病毒或抗菌治疗；呼吸困难、不进食或脱水需及时就医。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0013",
+      "title": "犬猫营养计划应根据个体情况制定",
+      "content": "WSAVA 营养指南强调，宠物应根据物种、生命阶段、体况、疾病情况和生活方式进行营养评估，并制定个体化营养计划。宠物营养建议不能只依据一个通用食谱或单一品牌作出结论。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "营养与体重管理",
+      "knowledge_type": "临床营养原则",
+      "keywords": [
+        "宠物营养",
+        "犬猫喂养",
+        "个体化营养",
+        "生命阶段"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "宠物应该怎么喂",
+        "狗猫营养计划怎么制定"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-NUTRITION",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/global-nutrition-guidelines/",
+        "https://www.aaha.org/resources/2021-aaha-nutrition-and-weight-management-guidelines/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "疾病状态、幼年期、妊娠期或老年期的饮食必须由兽医或兽医营养专业人员评估。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0014",
+      "title": "营养评估应在宠物就诊和健康管理中持续进行",
+      "content": "WSAVA 营养资源包括饮食史表、住院患者喂养指南、体况评分图表以及犬猫热量建议等工具，说明营养评估应成为兽医团队持续健康管理的一部分，而不是只在体重异常时才考虑。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "营养与体重管理",
+      "knowledge_type": "临床营养评估",
+      "keywords": [
+        "体况评分",
+        "饮食史",
+        "宠物热量",
+        "宠物肥胖"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "怎么判断宠物胖不胖",
+        "宠物每天吃多少"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-NUTRITION",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/global-nutrition-guidelines/",
+        "https://www.aaha.org/resources/2021-aaha-nutrition-and-weight-management-guidelines/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "热量和减重计划不能仅按网上公式执行，应结合体况和疾病风险调整。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0015",
+      "title": "犬猫疫苗计划需要结合物种、生活方式和地区风险",
+      "content": "WSAVA 疫苗指南面向犬猫提供全球疫苗接种原则，并区分核心疫苗和非核心疫苗。实际接种计划需要结合物种、年龄、既往接种记录、生活方式、暴露风险以及当地流行病学和规范，由兽医制定。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "预防保健与免疫",
+      "knowledge_type": "临床指南摘要",
+      "keywords": [
+        "犬猫疫苗",
+        "核心疫苗",
+        "非核心疫苗",
+        "宠物免疫"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "宠物疫苗怎么打",
+        "狗猫疫苗是不是一样"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-VACCINATION",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/vaccination-guidelines/",
+        "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+        "https://www.aaha.org/resources/2020-aahaaafp-feline-vaccination-guidelines/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能根据通用时间表替代本地兽医的个体化免疫计划；不能自行改变疫苗种类或间隔。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0016",
+      "title": "犬猫疼痛应被识别、评估并持续管理",
+      "content": "WSAVA 疼痛指南强调，疼痛识别、评估和治疗对患者健康与动物福利重要。疼痛管理需要结合疼痛类型、来源、严重程度、物种和个体状态进行持续评估，指南覆盖手术、肿瘤、骨关节、内科、神经性疼痛以及急危重症等场景。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "疼痛管理",
+      "knowledge_type": "临床指南摘要",
+      "keywords": [
+        "宠物疼痛",
+        "犬猫疼痛评估",
+        "术后疼痛",
+        "慢性疼痛"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "怎么判断宠物疼不疼",
+        "宠物术后疼痛怎么办"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-PAIN",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/pain-guidelines/",
+        "https://www.aaha.org/resources/2022-aaha-pain-management-guidelines-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不能根据人用止痛药或网络剂量自行给药；药物和剂量必须由兽医决定。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0017",
+      "title": "犬猫疼痛管理应按场景制定方案",
+      "content": "疼痛来源和场景不同，管理方案也不同。WSAVA 疼痛资源按剖腹产、肿瘤疼痛、绝育手术、退行性关节病、急危重症、内科疼痛、神经性疼痛、骨科手术和软组织手术等场景提供协议入口，说明疼痛管理不是单一药物或单一方案。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "疼痛管理",
+      "knowledge_type": "疼痛管理原则",
+      "keywords": [
+        "多模式镇痛",
+        "犬猫手术疼痛",
+        "关节疼痛",
+        "疼痛协议"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "狗狗手术后怎么止痛",
+        "猫关节疼痛如何处理"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-PAIN",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/pain-guidelines/",
+        "https://www.aaha.org/resources/2022-aaha-pain-management-guidelines-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "本条目只说明管理逻辑，不提供具体药物、剂量或处方。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0018",
+      "title": "犬猫口腔和牙科疾病是常见医疗问题",
+      "content": "WSAVA 牙科指南指出，口腔和牙科疾病是伴侣动物中常见的医疗问题，兽医团队应重视口腔检查、牙周健康和规范牙科护理。口腔异味、牙龈异常、咀嚼困难或进食变化等情况应纳入口腔健康评估，而不能只视为美容问题。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "口腔与牙科",
+      "knowledge_type": "临床指南摘要",
+      "keywords": [
+        "宠物牙科",
+        "犬猫牙周病",
+        "口臭",
+        "口腔检查"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "宠物口臭正常吗",
+        "狗猫需要洗牙吗"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-GLOBAL",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/dental-guidelines/",
+        "https://www.aaha.org/resources/2019-aaha-dental-care-guidelines-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "是否需要麻醉、洁牙、牙科影像或拔牙必须由兽医口腔检查后判断。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0019",
+      "title": "家庭口腔护理应在兽医评估和指导下进行",
+      "content": "WSAVA 牙科资源包含宠物牙齿评分和刷牙介绍，提示家庭口腔护理可以作为口腔健康管理的一部分。开始刷牙前应先评估口腔疼痛、牙龈炎症和牙周问题；若宠物已经疼痛或抗拒，不应强行刷牙，应先咨询兽医。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "口腔与牙科",
+      "knowledge_type": "预防护理",
+      "keywords": [
+        "宠物刷牙",
+        "犬猫口腔护理",
+        "牙齿评分",
+        "牙龈炎"
+      ],
+      "risk_level": "medium",
+      "retrieval_intent": [
+        "如何给狗狗刷牙",
+        "猫咪不让刷牙怎么办"
+      ],
+      "source_ids": [
+        "SRC-WSAVA-GLOBAL",
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://wsava.org/global-guidelines/dental-guidelines/",
+        "https://www.aaha.org/resources/2019-aaha-dental-care-guidelines-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "家庭护理不能替代牙科检查和专业治疗；不要强行处理疼痛或出血的口腔。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0020",
+      "title": "犬猫液体治疗的类型、剂量和疗程需要个体化",
+      "content": "AAHA 液体治疗指南将液体治疗用于多种场景，包括脱水、肾脏疾病、传染病、肾上腺危象和麻醉期支持。液体种类、给药量、速度和持续时间需要根据患者状态、疾病、心肾功能和治疗目标由兽医决定。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "急诊与支持治疗",
+      "knowledge_type": "临床指南摘要",
+      "keywords": [
+        "宠物补液",
+        "犬猫脱水",
+        "液体治疗",
+        "皮下补液"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "宠物脱水怎么补液",
+        "猫肾病要不要皮下补液"
+      ],
+      "source_ids": [
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://www.aaha.org/resources/2024-aaha-fluid-therapy-guidelines-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不得把家庭自行补液或人用补液方案当作通用建议；心脏病、肾病和重症患者尤其需要专业监测。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0021",
+      "title": "犬猫糖尿病管理存在物种差异",
+      "content": "AAHA 指南目录明确区分犬猫糖尿病管理，并特别指出猫的糖尿病管理需要不同于犬的方法。糖尿病诊断、饮食、用药、血糖监测和并发症管理应由兽医根据物种和个体情况制定，不能把犬的方案直接套用到猫。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "内分泌与代谢",
+      "knowledge_type": "疾病管理原则",
+      "keywords": [
+        "犬糖尿病",
+        "猫糖尿病",
+        "血糖管理",
+        "物种差异"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "猫糖尿病和狗糖尿病一样吗",
+        "宠物血糖怎么管理"
+      ],
+      "source_ids": [
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://www.aaha.org/resources/2026-aaha-diabetes-management-guidelines-for-cats/",
+        "https://www.aaha.org/resources/2018-aaha-diabetes-management-guideline-for-dogs-and-cats/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "不提供胰岛素种类、剂量或调整方案；低血糖等风险需要兽医指导。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0022",
+      "title": "过敏性皮肤病管理通常需要多模式方案",
+      "content": "AAHA 过敏性皮肤病指南摘要指出，犬猫过敏性皮肤病并非一套方案适用于所有个体，多模式管理往往更有帮助。临床管理可能需要同时处理寄生虫、继发感染、瘙痒、环境或食物因素，并根据治疗反应调整方案。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "皮肤科",
+      "knowledge_type": "临床指南摘要",
+      "keywords": [
+        "过敏性皮肤病",
+        "犬猫瘙痒",
+        "继发感染",
+        "多模式治疗"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "宠物过敏怎么治",
+        "狗猫皮肤病为什么反复"
+      ],
+      "source_ids": [
+        "SRC-AAHA"
+      ],
+      "source_urls": [
+        "https://www.aaha.org/resources/2023-aaha-management-of-allergic-skin-diseases-in-dogs-and-cats-guidelines/"
+      ],
+      "evidence_type": "clinical_guideline_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "药物选择和组合可能受物种、年龄、妊娠、感染和基础病影响，必须由兽医处方和复诊监测。",
+      "embedding": null
+    },
+    {
+      "knowledge_id": "PMK-0023",
+      "title": "犬猫医学知识不能脱离物种和地区背景直接套用",
+      "content": "WSAVA 疫苗指南提供全球原则并有区域建议，Merck 也将犬和猫的疾病专题分开组织；这说明犬猫在疾病风险、症状、用药和预防计划上可能存在差异。知识库检索时应先确认物种、年龄、生活方式和地区，再使用对应内容。",
+      "species": [
+        "dog",
+        "cat"
+      ],
+      "domain": "综合临床与预防",
+      "knowledge_type": "临床安全原则",
+      "keywords": [
+        "犬猫差异",
+        "物种标签",
+        "地区疫苗",
+        "宠物医疗检索"
+      ],
+      "risk_level": "high",
+      "retrieval_intent": [
+        "狗和猫的治疗一样吗",
+        "宠物医疗知识怎么按物种查"
+      ],
+      "source_ids": [
+        "SRC-MERCK-DOG",
+        "SRC-MERCK-CAT",
+        "SRC-WSAVA-VACCINATION"
+      ],
+      "source_urls": [
+        "https://www.merckvetmanual.com/dog-owners",
+        "https://www.merckvetmanual.com/cat-owners",
+        "https://wsava.org/global-guidelines/vaccination-guidelines/"
+      ],
+      "evidence_type": "clinical_safety_summary",
+      "review_status": "pending_vet_review",
+      "commercial_use_status": "not_cleared",
+      "clinical_use_boundary": "这是临床使用边界，不是诊断规则；所有具体诊疗仍需兽医判断。",
+      "embedding": null
+    }
+  ]
+}
