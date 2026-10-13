@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f7f5">
+  <title>PetPulse 宠物健康日志</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="PetPulse 首页"><span class="brand-mark"><i data-lucide="heart-pulse"></i></span><span>PetPulse<small>HEALTH JOURNAL</small></span></a>
+      <div class="sidebar-heading"><span>我的宠物</span><button class="icon-button" id="new-pet-button" title="新建宠物档案" aria-label="新建宠物档案"><i data-lucide="plus"></i></button></div>
+      <nav class="pet-list" id="pet-list" aria-label="宠物档案"></nav>
+      <a class="button button-secondary" href="/ai-lab" style="margin:16px 0">AI 健康工作台 ↗</a>
+      <div class="sidebar-foot"><i data-lucide="shield-check"></i><span>日志仅用于健康观察<br>不替代兽医诊断</span></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <div><p class="eyebrow">PET HEALTH TIMELINE</p><h1 id="page-title">选择或创建一个宠物档案</h1></div>
+        <div class="top-actions"><button class="button button-secondary" id="edit-pet-button" disabled><i data-lucide="pencil"></i>编辑档案</button><button class="button button-primary" id="new-log-button" disabled><i data-lucide="plus"></i>记录日志</button><button class="button button-danger" id="delete-pet-button" disabled><i data-lucide="trash-2"></i>删除宠物</button></div>
+      </header>
+      <section class="pet-summary" id="pet-summary" hidden>
+        <div class="pet-avatar" id="pet-avatar"></div><div class="pet-details"><div class="pet-name-line"><h2 id="pet-name"></h2><span class="species-tag" id="pet-species"></span></div><p id="pet-meta"></p><div class="health-tags" id="pet-health-tags"></div></div><div class="summary-actions"><span class="log-count" id="log-count">0 条日志</span></div>
+      </section>
+      <section class="empty-state" id="empty-state"><span class="empty-icon"><i data-lucide="notebook-pen"></i></span><h2>请从左侧选择宠物</h2><p>在左侧栏点击加号创建档案，或选择已有宠物以查看它的日志和健康分析。</p></section>
+      <section class="timeline-section" id="timeline-section" hidden>
+        <div class="workspace-grid">
+          <section class="log-workspace"><div class="section-heading"><div><h2>健康日志</h2><p>原始记录会作为 AI 分析与就诊摘要的可追溯依据。</p></div><select id="log-filter" aria-label="筛选日志类型"><option value="">全部记录</option><option value="daily">日常观察</option><option value="symptom">症状</option><option value="medication">用药</option><option value="visit">就诊</option><option value="measurement">测量</option></select></div><div class="timeline" id="timeline"></div></section>
+          <section class="journal-assessment" aria-label="AI 日志评估"><div class="analysis-heading"><div><p class="eyebrow">AI JOURNAL ASSESSMENT</p><h2>AI 日志评估</h2></div><span class="phase-badge">可溯源 AI</span></div><div class="assessment-controls"><label>分析范围<select id="analysis-period"><option value="7">近 7 天</option><option value="14">近 14 天</option><option value="30">近 30 天</option></select></label><button class="button button-primary" id="generate-report-button">生成日志评估</button><a class="button button-secondary" id="consult-ai-button" href="/ai-lab">与兽医 AI 对话 ↗</a></div><div class="analysis-empty" id="analysis-empty"><p>根据当前宠物日志，简要查看健康变化与下一步建议。</p></div><div class="report-result" id="report-result" hidden></div><p class="analysis-note">用于健康观察，不替代兽医诊断或急诊处理。</p></section>
+        </div>
+      </section>
+    </main>
+  </div>
+  <dialog id="pet-dialog" class="dialog"><form method="dialog" id="pet-form"><div class="dialog-heading"><div><p class="eyebrow">PET PROFILE</p><h2 id="pet-dialog-title">新建宠物档案</h2></div><button class="icon-button" value="cancel" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div><div class="form-grid"><label>名字<input name="name" required maxlength="80" placeholder="例如：团子"></label><label>物种<select name="species" required><option value="cat">猫</option><option value="dog">犬</option></select></label><label>品种<input name="breed" maxlength="120" placeholder="例如：英国短毛猫"></label><label>出生日期<input name="birth_date" type="date"></label><label>性别<select name="sex"><option value="unknown">未知</option><option value="female">雌性</option><option value="male">雄性</option></select></label><label>体重 kg<input name="weight_kg" type="number" min="0.01" max="299.99" step="0.01" placeholder="例如：4.5"></label><label class="checkbox-label"><input name="neutered" type="checkbox"> 已绝育</label></div><label>已知过敏<input name="allergies" maxlength="2000" placeholder="没有可留空"></label><label>慢性疾病或既往史<textarea name="chronic_conditions" rows="2" maxlength="2000" placeholder="没有可留空"></textarea></label><label>当前用药<textarea name="current_medications" rows="2" maxlength="2000" placeholder="没有可留空"></textarea></label><div class="form-actions"><button class="button button-secondary" value="cancel" type="button" data-close>取消</button><button class="button button-primary" type="submit">保存档案</button></div></form></dialog>
+  <dialog id="log-dialog" class="dialog"><form method="dialog" id="log-form"><div class="dialog-heading"><div><p class="eyebrow">HEALTH LOG</p><h2>记录健康日志</h2></div><button class="icon-button" value="cancel" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div><label>日志类型<select name="log_type"><option value="daily">日常观察</option><option value="symptom">症状</option><option value="medication">用药</option><option value="visit">就诊</option><option value="measurement">测量</option></select></label><label>记录时间<input name="logged_at" type="datetime-local"></label><label>这次发生了什么<textarea name="content" rows="5" required maxlength="4000" placeholder="例如：今天早上只吃了一半猫粮，下午比平时更爱喝水，精神还可以。"></textarea></label><div class="quick-fields"><p>可选观察项</p><div class="form-grid"><label>食欲<select name="appetite"><option value="">未记录</option><option value="normal">正常</option><option value="reduced">减少</option><option value="none">拒食</option></select></label><label>饮水<select name="water_intake"><option value="">未记录</option><option value="normal">正常</option><option value="increased">增多</option><option value="reduced">减少</option></select></label><label>精神<select name="energy"><option value="">未记录</option><option value="normal">正常</option><option value="low">下降</option><option value="high">亢奋</option></select></label><label>体重 kg<input name="weight_kg" type="number" min="0.01" max="299.99" step="0.01" placeholder="可选"></label></div></div><div class="form-actions"><button class="button button-secondary" value="cancel" type="button" data-close>取消</button><button class="button button-primary" type="submit">保存日志</button></div></form></dialog>
+  <dialog id="delete-pet-dialog" class="dialog" aria-labelledby="delete-pet-title"><form id="delete-pet-form"><div class="dialog-heading"><h2 id="delete-pet-title">删除宠物 · 第一次确认</h2></div><p id="delete-pet-warning"></p><p class="delete-warning">删除后，该宠物的档案、全部日志、AI 报告、历史对话和就诊摘要将一并永久删除，无法撤销。</p><label id="delete-name-label" hidden>请输入宠物的完整名字，进行第二次确认<input id="delete-name-input" autocomplete="off" maxlength="80"></label><p id="delete-pet-error" role="alert"></p><div class="form-actions"><button class="button button-secondary" id="cancel-delete-pet" type="button">取消</button><button class="button button-danger" id="confirm-delete-pet" type="submit">我已了解，继续确认</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script><script src="/assets/app.js"></script>
+</body>
+</html>

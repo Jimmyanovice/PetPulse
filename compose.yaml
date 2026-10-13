@@ -10,7 +10,8 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # The explicit volume name is stable across compose project-directory changes.
+      - ai_vector_lab_postgres_data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -19,4 +20,5 @@ services:
       retries: 10
 
 volumes:
-  postgres_data:
+  ai_vector_lab_postgres_data:
+    name: ai_vector_lab_postgres_data

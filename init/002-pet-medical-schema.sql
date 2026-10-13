@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS pet_medical_knowledge (
     review_status TEXT NOT NULL DEFAULT 'pending_vet_review',
     commercial_use_status TEXT NOT NULL DEFAULT 'not_cleared',
     clinical_use_boundary TEXT,
-    embedding VECTOR(384),
+    embedding HALFVEC(3072),
     dataset_version TEXT NOT NULL DEFAULT '2.0',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS pet_medical_embedding_hnsw_idx
-    ON pet_medical_knowledge USING hnsw (embedding vector_cosine_ops);
+    ON pet_medical_knowledge USING hnsw (embedding halfvec_cosine_ops);
 CREATE INDEX IF NOT EXISTS pet_medical_species_gin_idx
     ON pet_medical_knowledge USING gin (species);
 CREATE INDEX IF NOT EXISTS pet_medical_keywords_gin_idx

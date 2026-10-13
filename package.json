@@ -1,0 +1,13 @@
+{
+  "name": "petpulse-browser-checks",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:ui": "node scripts/check_pet_context_layout.cjs",
+    "test:chat": "node scripts/check_conversation_layout.cjs",
+    "test:deletion": "node scripts/check_pet_deletion.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

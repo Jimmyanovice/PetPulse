@@ -2,3 +2,22 @@
 __pycache__/
 .venv/
 *.pyc
+
+# Local credentials, runtime files, backups and internal team material
+.env.*
+!.env.example
+logs/
+backups/
+artifacts/
+local-archive/
+docx_render/
+*.docx
+*.xlsx
+*.dump
+*.sqlite*
+.pytest_cache/
+node_modules/
+playwright-report/
+test-results/
+.DS_Store
+Thumbs.db
